@@ -25,7 +25,8 @@ services:
   init-kafka:
     image: confluentinc/cp-kafka:7.5.3
     depends_on:
-      - kafka
+      kafka:
+          condition: service_started
     entrypoint: [ '/bin/sh', '-c' ]
     command: |
       "
