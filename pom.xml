@@ -20,7 +20,7 @@
     </properties>
 
     <packaging>pom</packaging>
-
+    
     <modules>
         <module>bets-api</module>
         <module>integration-tests</module>
