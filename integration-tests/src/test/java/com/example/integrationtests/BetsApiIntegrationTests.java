@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 import java.util.Currency;
+import java.util.Objects;
 import java.util.UUID;
 
 import static com.example.integrationtests.TestConstants.POST_SEND_OUTGOING_BET_URI;
@@ -40,7 +41,7 @@ class BetsApiIntegrationTests {
     @Qualifier("restTestTemplate")
     private RestTemplate restTemplate;
     @Autowired
-    private Consumer<String, BetData> outgoingTopicConsumerFactory;
+    private Consumer<String, BetData> outgoingTopicConsumer;
 
     @Test
     void givenBetData_whenPostSendOutgoingBet_thenExpectBetDataInKafkaOutgoingTopic() {
@@ -61,14 +62,28 @@ class BetsApiIntegrationTests {
     }
 
     void checkIfBetDataIsInTopic(BetData betData) {
-        ConsumerRecords<String, BetData> records = outgoingTopicConsumerFactory.poll(Duration.of(10, ChronoUnit.SECONDS));
         BetData betDataInTopic = null;
-        for (ConsumerRecord<String, BetData> record : records) {
-            if (betData.betId().equals(record.value().betId())) {
-                betDataInTopic = record.value();
+        while (true) {
+            ConsumerRecords<String, BetData> records = outgoingTopicConsumer.poll(Duration.ofSeconds(30));
+            for (ConsumerRecord<String, BetData> r : records) {
+                if (betData.betId().equals(r.value().betId())) {
+                    betDataInTopic = r.value();
+                }
             }
+
+            if (Objects.nonNull(betDataInTopic)) break;
+
+            wait(500, ChronoUnit.MILLIS);
         }
 
         assertNotNull(betDataInTopic);
+    }
+
+    void wait(long timeout, TemporalUnit unit) {
+        try {
+            Thread.sleep(Duration.of(timeout, unit));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

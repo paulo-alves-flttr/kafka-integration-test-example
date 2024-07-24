@@ -38,7 +38,7 @@ public class KafkaTestConfiguration {
     }
 
     @Bean(destroyMethod = "close")
-    public Consumer<String, BetData> outgoingTopicConsumerFactory(
+    public Consumer<String, BetData> outgoingTopicConsumer(
             @Value("${spring.kafka.bets.outgoing-topic}") String outgoingTopic) {
         final var configProps = new HashMap<String, Object>();
         configProps.put(ConsumerConfig.GROUP_ID_CONFIG, outgoingTopic);
