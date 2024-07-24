@@ -17,6 +17,7 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.UUID;
 
 @TestConfiguration
 public class KafkaTestConfiguration {
@@ -41,8 +42,8 @@ public class KafkaTestConfiguration {
     public Consumer<String, BetData> outgoingTopicConsumer(
             @Value("${spring.kafka.bets.outgoing-topic}") String outgoingTopic) {
         final var configProps = new HashMap<String, Object>();
-        configProps.put(ConsumerConfig.GROUP_ID_CONFIG, outgoingTopic);
-        configProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+        configProps.put(ConsumerConfig.GROUP_ID_CONFIG, outgoingTopic.concat(UUID.randomUUID().toString()));
+        configProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);

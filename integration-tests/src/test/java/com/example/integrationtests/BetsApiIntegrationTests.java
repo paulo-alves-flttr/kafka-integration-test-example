@@ -64,7 +64,7 @@ class BetsApiIntegrationTests {
     void checkIfBetDataIsInTopic(BetData betData) {
         BetData betDataInTopic = null;
         while (true) {
-            ConsumerRecords<String, BetData> records = outgoingTopicConsumer.poll(Duration.ofSeconds(30));
+            ConsumerRecords<String, BetData> records = outgoingTopicConsumer.poll(Duration.ofSeconds(1));
             for (ConsumerRecord<String, BetData> r : records) {
                 if (betData.betId().equals(r.value().betId())) {
                     betDataInTopic = r.value();
